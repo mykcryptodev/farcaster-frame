@@ -10,11 +10,14 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
     console.error(err);
   }
 
+  // get a random number between 1 and 3,333
+  const random = Math.floor(Math.random() * 3333) + 1;
+
   return new NextResponse(`<!DOCTYPE html><html><head>
     <meta property="fc:frame" content="vNext" />
-    <meta property="fc:frame:image" content="https://zizzamia.xyz/park-2.png" />
-    <meta property="fc:frame:button:1" content="${accountAddress}" />
-    <meta property="fc:frame:post_url" content="https://zizzamia.xyz/api/frame" />
+    <meta property="fc:frame:image" content="https://ipfs.io/ipfs/Qmae61Y9tLf5w9vgdjJAjXdXhkqcJViCHUD8SDgviPfTyv/${random}.png" />
+    <meta property="fc:frame:button:1" content="Next Mochimon" />
+    <meta property="fc:frame:post_url" content="https://farcaster-frame-myk.vercel.app/api/frame" />
   </head></html>`);
 }
 
