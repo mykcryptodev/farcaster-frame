@@ -25,4 +25,9 @@ export async function POST(req: NextRequest): Promise<Response> {
   return getResponse(req);
 }
 
+export async function GET(req: NextRequest): Promise<Response> {
+  const random = Math.floor(Math.random() * 3333) + 1;
+  return new NextResponse(`https://ipfs.io/ipfs/Qmae61Y9tLf5w9vgdjJAjXdXhkqcJViCHUD8SDgviPfTyv/${random}.png`);
+}
+
 export const dynamic = 'force-dynamic';
