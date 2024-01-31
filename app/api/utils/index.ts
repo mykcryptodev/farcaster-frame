@@ -6,7 +6,6 @@
 */
 import { type NFT } from "@thirdweb-dev/sdk";
 import { ThirdwebStorage } from "@thirdweb-dev/storage";
-import { ethers } from "ethers";
 import type mergeImages from 'merge-images';
 import { bool, MersenneTwister19937, real } from 'random-js';
 import sharp from 'sharp';
@@ -177,7 +176,7 @@ export const generateNfts = async (props: Props) => {
           ...metadata,
           image: ipfsHash,
         },
-        owner: ethers.ZeroAddress,
+        owner: '0x0000000000000000000000000000000000000000',
         type: "ERC721",
         supply: 1,
       } as unknown as NFT;
