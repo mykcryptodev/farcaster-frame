@@ -5,14 +5,6 @@ import { APP_URL } from '../utils';
 import { LAYERS } from '../utils/layers';
 
 async function getResponse(req: NextRequest): Promise<NextResponse> {
-  await kv.del('0x225b1aa72e0290a8a8461267270fd2ac7414e275');
-  await kv.hset('0x225b1aa72e0290a8a8461267270fd2ac7414e275', {
-    currentStep: 0,
-    layers: [],
-    hasMinted: false,
-  });
-  const data = await kv.hget('0x225b1aa72e0290a8a8461267270fd2ac7414e275', 'currentStep');
-  console.log({ data })
   let accountAddress: string | undefined;
   try {
     const body: FrameRequest = await req.json();
@@ -46,6 +38,14 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
     // </head></html>`);
     accountAddress = '0x9036464e4ecD2d40d21EE38a0398AEdD6805a09B'
   }
+
+  // TODO: Remove this reset of everyone when testing is done
+  await kv.del(accountAddress);
+  await kv.hset(accountAddress, {
+    currentStep: 0,
+    layers: [],
+    hasMinted: false,
+  });
 
   const userHasMinted = await kv.hget(accountAddress, 'hasMinted');
   // if user has minted, return a static image
