@@ -12,7 +12,7 @@ import sharp from 'sharp';
 
 import { type MetadataTemplate } from '../../../types/generator';
 
-export const APP_URL = process.env.NODE_ENV === 'production' ? process.env.VERCEL_URL : 'https://2ac0-209-214-123-227.ngrok-free.app';
+export const APP_URL = process.env.NODE_ENV === 'production' ? 'https://' + process.env.VERCEL_URL : 'https://2ac0-209-214-123-227.ngrok-free.app';
 export const STEPS = [
   "start",
   "background",
