@@ -46,14 +46,8 @@ export const getUser = async (req: NextRequest) => {
     await kv.hset(accountAddress, { hasMinted: false });
   }
   console.log({ userHasMinted });
-  // mint the nft
-  const sdk = ThirdwebSDK.fromPrivateKey(process.env.PRIVATE_KEY!, NFT_CHAIN_STRING, {
-    secretKey: process.env.THIRDWEB_SECRET_KEY,
-  });
-  const contract = await sdk.getContract(NFT_CONTRACT, "nft-collection");
-  const balance = await contract.erc721.balanceOf(accountAddress);
   // if user has minted, return a static image
-  if (userHasMinted || balance.gt(0)) {
+  if (userHasMinted) {
     // TODO: fetch the actual nft of this user and display it
     return new NextResponse(`<!DOCTYPE html><html><head>
       <meta property="fc:frame" content="vNext" />
