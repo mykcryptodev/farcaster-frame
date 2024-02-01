@@ -2,6 +2,7 @@ import { FrameData, FrameRequest, getFrameAccountAddress, getFrameMessage } from
 import { NextRequest, NextResponse } from "next/server";
 import { APP_URL } from "./index";
 import { kv } from "@vercel/kv";
+import { NFT } from "@thirdweb-dev/sdk";
 
 export const getUser = async (req: NextRequest) => {
   let accountAddress: string | undefined;
@@ -41,6 +42,10 @@ export const getUser = async (req: NextRequest) => {
   }
 
   const userHasMinted = await kv.hget(accountAddress, 'hasMinted');
+  if (!userHasMinted) {
+    await kv.hset(accountAddress, { hasMinted: false });
+  }
+  console.log({ userHasMinted });
   // if user has minted, return a static image
   if (userHasMinted) {
     // TODO: fetch the actual nft of this user and display it
@@ -60,9 +65,14 @@ export const getUser = async (req: NextRequest) => {
     currentStep = 0;
   }
 
+  // get the user nft
+  let nft: NFT | undefined | null = await kv.hget(accountAddress, 'nft');
+
   return {
     currentStep,
     accountAddress,
     message: Message,
+    nft,
+    userHasMinted,
   };
 }

@@ -65,9 +65,9 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
         }
       }).filter(Boolean) as any,
       metadataTemplate: {
-        name: "Mochimon",
-        description: "Mochimons are cute little monsters that live on the blockchain.",
-        external_url: "https://mochimo.club",
+        name: "Myk Bois",
+        description: "Myk Bois are created by you in a farcaster frame.",
+        external_url: "https://x.com/mykcryptodev",
       },
     },
     numNfts: 1,
@@ -130,12 +130,13 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
   // if there are no more layers, return the image
   // TODO: make this a mint button
   if (!nextStepLayers) {
+    await kv.hset(accountAddress, { nft });
     return new NextResponse(`
       <!DOCTYPE html><html><head>
         <meta property="fc:frame" content="vNext" />
         <meta property="fc:frame:image" content="${imageUrl}" />
-        <meta property="fc:frame:button:1" content="Your NFT is made!" />
-        <meta property="fc:frame:post_url" content="${APP_URL}/api/frame" />
+        <meta property="fc:frame:button:1" content="Mint your NFT!" />
+        <meta property="fc:frame:post_url" content="${APP_URL}/api/frame/mint" />
       </head></html>
     `);
   }

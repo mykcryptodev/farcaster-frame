@@ -12,7 +12,8 @@ import sharp from 'sharp';
 
 import { type MetadataTemplate } from '../../../types/generator';
 
-export const APP_URL = process.env.NODE_ENV === 'production' ? 'https://farcaster-frame-myk.vercel.app' : 'https://2ac0-209-214-123-227.ngrok-free.app';
+export const APP_URL = process.env.NODE_ENV === 'production' ? 'https://farcaster-frame-myk.vercel.app' : 'https://cfec-209-214-123-227.ngrok-free.app';
+export const NFT_CONTRACT = "0xF28f07EB98F0Bd4EbB87CCbD2fD07accD482E7d9";
 export const STEPS = [
   "start",
   "background",
@@ -87,7 +88,7 @@ export const generateNfts = async (props: Props) => {
     return {
       id: tokenId,
       image: '<%IMAGE_URL%>',
-      name: `${content.metadataTemplate.name} #${tokenId}`,
+      name: `${content.metadataTemplate.name}`, // "# tokenId" gets appended at time of mint
       external_url: `${content.metadataTemplate.external_url}`,
       description: `${content.metadataTemplate.description}`,
       attributes: attributes,
@@ -176,7 +177,6 @@ export const generateNfts = async (props: Props) => {
           ...metadata,
           image: ipfsHash,
         },
-        owner: '0x0000000000000000000000000000000000000000',
         type: "ERC721",
         supply: 1,
       } as unknown as NFT;
