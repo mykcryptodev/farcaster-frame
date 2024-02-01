@@ -40,13 +40,13 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
   }
 
   // TODO: Remove this reset of everyone when testing is done
-  // await kv.del(accountAddress);
-  // await kv.hset(accountAddress, {
-  //   currentStep: 0,
-  //   layers: [],
-  //   hasMinted: false,
-  //   userNftImageUrl: null,
-  // });
+  await kv.del(accountAddress);
+  await kv.hset(accountAddress, {
+    currentStep: 0,
+    layers: [],
+    hasMinted: false,
+    userNftImageUrl: null,
+  });
 
   const userHasMinted = await kv.hget(accountAddress, 'hasMinted');
   // if user has minted, return a static image
