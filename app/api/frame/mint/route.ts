@@ -78,6 +78,10 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
   const tx = contract.erc721.mintTo(accountAddress, {
     ...nft.metadata,
     name: nft.metadata.name + ` #${count}`,
+  }).then((tx) => {
+    console.log('finished tx', tx);
+  }).catch(e => {
+    console.log('error w tx', e);
   });
   console.log({ tx });
 
