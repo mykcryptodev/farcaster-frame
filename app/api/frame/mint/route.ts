@@ -1,8 +1,9 @@
 import { kv } from '@vercel/kv';
 import { NextRequest, NextResponse } from 'next/server';
-import { APP_URL, NFT_CONTRACT } from '../../utils';
+import { APP_URL, NFT_CHAIN_STRING, NFT_CONTRACT } from '../../utils';
 import { getUser } from '../../utils/getUser';
 import { NFT, ThirdwebSDK } from '@thirdweb-dev/sdk';
+import { StorageDownloader, ThirdwebStorage } from '@thirdweb-dev/storage';
 
 async function getResponse(req: NextRequest): Promise<NextResponse> {
   const { nft, accountAddress, userHasMinted } = await getUser(req) as {
@@ -63,25 +64,47 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
   console.log(JSON.stringify(nft));
 
   // mint the nft
-  const sdk = ThirdwebSDK.fromPrivateKey(process.env.PRIVATE_KEY!, "sepolia", {
+  const sdk = ThirdwebSDK.fromPrivateKey(process.env.PRIVATE_KEY!, NFT_CHAIN_STRING, {
     secretKey: process.env.THIRDWEB_SECRET_KEY,
   });
   const contract = await sdk.getContract(NFT_CONTRACT, "nft-collection");
   const count = await contract.erc721.totalCount();
-  const tx = await contract.erc721.mintTo(accountAddress, {
+
+  // we dont wait for the blockchain, we just send off the tx and hope for the best
+  // we only have a few seconds to respond to the user
+  const tx = contract.erc721.mintTo(accountAddress, {
     ...nft.metadata,
     name: nft.metadata.name + ` #${count}`,
   });
-  const tokenId = tx.id;
+
+  console.log({ tx });
+
+  console.log('updated user as having minted');
+
+  const downloader = new StorageDownloader({
+    secretKey: process.env.THIRDWEB_SECRET_KEY,
+  });
+  const storage = new ThirdwebStorage({
+    secretKey: process.env.THIRDWEB_SECRET_KEY,
+    downloader,
+  });
+  const image = await storage.download(nft.metadata.image as string);
+  const imageUrl = image.url;
 
   // set the user as having minted
-  await kv.hset(accountAddress, { hasMinted: true });
+  await kv.hset(accountAddress, { 
+    hasMinted: true,
+    userNftImageUrl: imageUrl,
+  });
+
+  console.log('we are going to respond...');
+  console.log({ imageUrl, count})
 
   return new NextResponse(`
     <!DOCTYPE html><html><head>
       <meta property="fc:frame" content="vNext" />
-      <meta property="fc:frame:image" content="${nft.metadata.image}" />
-      <meta property="fc:frame:button:1" content="#${tokenId}" />
+      <meta property="fc:frame:image" content="${imageUrl}" />
+      <meta property="fc:frame:button:1" content="#${count}" />
       <meta property="fc:frame:button:2" content="Mint Successful!" />
       <meta property="fc:frame:post_url" content="${APP_URL}/api/frame" />
     </head></html>

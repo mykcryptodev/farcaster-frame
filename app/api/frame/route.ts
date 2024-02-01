@@ -40,21 +40,23 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
   }
 
   // TODO: Remove this reset of everyone when testing is done
-  await kv.del(accountAddress);
-  await kv.hset(accountAddress, {
-    currentStep: 0,
-    layers: [],
-    hasMinted: false,
-  });
+  // await kv.del(accountAddress);
+  // await kv.hset(accountAddress, {
+  //   currentStep: 0,
+  //   layers: [],
+  //   hasMinted: false,
+  //   userNftImageUrl: null,
+  // });
 
   const userHasMinted = await kv.hget(accountAddress, 'hasMinted');
   // if user has minted, return a static image
   if (userHasMinted) {
+    const userNftImageUrl = await kv.hget(accountAddress, 'userNftImageUrl');
     // TODO: fetch the actual nft of this user and display it
     return new NextResponse(`<!DOCTYPE html><html><head>
       <meta property="fc:frame" content="vNext" />
-      <meta property="fc:frame:image" content="https://ipfs.io/ipfs/QmZvYX1iXy4bKJ6xJ8Z7ZyWwCgYX2ZkH5q2Z1KwZ3zJqJ5/1.png" />
-      <meta property="fc:frame:button:1" content="Your NFT" />
+      <meta property="fc:frame:image" content="${userNftImageUrl}" />
+      <meta property="fc:frame:button:1" content="Your NFT Has Been Minted!" />
       <meta property="fc:frame:post_url" content="${APP_URL}/api/frame" />
     </head></html>`);
   }
