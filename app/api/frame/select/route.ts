@@ -54,7 +54,7 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
         }
         if (layerData.file) {
           return {
-            name: layerData.name,
+            name: layerData.layer,
             probability: 1,
             options: [{
               name: layerData.name,
