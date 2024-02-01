@@ -163,8 +163,8 @@ export const SHIRTS = [
 export const LAYERS = [
   BACKGROUNDS,
   HEADS,
+  HATS,
   EYES,
   FACIAL_HAIR,
   SHIRTS,
-  HATS,
 ];
