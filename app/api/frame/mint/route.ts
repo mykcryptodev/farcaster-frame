@@ -118,7 +118,7 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
     <!DOCTYPE html><html><head>
       <meta property="fc:frame" content="vNext" />
       <meta property="fc:frame:image" content="${imageUrl}" />
-      <meta property="fc:frame:button:1" content="#${count}" />
+      <meta property="fc:frame:button:1" content="#${count.toString()}" />
       <meta property="fc:frame:button:2" content="Mint Successful!" />
       <meta property="fc:frame:post_url" content="${APP_URL}/api/frame" />
     </head></html>
