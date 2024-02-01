@@ -80,7 +80,7 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
   return new NextResponse(`
     <!DOCTYPE html><html><head>
       <meta property="fc:frame" content="vNext" />
-      <meta property="fc:frame:image" content="https://imgs.search.brave.com/gyfXhNPBzyoHoTGMYWQsNfaIfcr18gxs-z4PDYRUMWY/rs:fit:860:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5pc3RvY2twaG90/by5jb20vaWQvMTgy/MTc2MzUxL3Bob3Rv/L2EtcGljdHVyZS1v/Zi1hLWNhdC1vbi1h/LXdoaXRlLWJhY2tn/cm91bmQtbG9va2lu/Zy11cC5qcGc_cz02/MTJ4NjEyJnc9MCZr/PTIwJmM9cjIxMk5V/cEYxb0tKWFU3TVpk/LXFlX2hST2MxZXNw/SDVxRENzaEtrYWtS/ST0" />
+      <meta property="fc:frame:image" content="https://ipfs.io/ipfs/QmXwnE7LyGgk5wCj68gzXT4DLrFa8PAj1o8ueuVxLfUS2E/Untitled%20design%20(4).png" />
       ${nextStepOptions.join('\n')}
       <meta property="fc:frame:post_url" content="${APP_URL}/api/frame/select" />
     </head></html>

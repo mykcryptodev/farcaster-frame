@@ -6,7 +6,7 @@ const frameMetadata = getFrameMetadata({
   buttons: [{
     label: "Get Started"
   }],
-  image: 'https://raw.seadn.io/files/f3cb5c80c96cea79441a15f06ee291c5.png',
+  image: 'https://ipfs.io/ipfs/QmXAzLJRwNFuE7S6L2EZdJ51yuMQJtiXKdRVURTmTdotj7/rodeo.png',
   post_url: `${APP_URL}/api/frame`,
 });
 
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'myk.eth',
     description: 'LFG',
-    images: ['https://raw.seadn.io/files/f3cb5c80c96cea79441a15f06ee291c5.png'],
+    images: ['https://ipfs.io/ipfs/QmXAzLJRwNFuE7S6L2EZdJ51yuMQJtiXKdRVURTmTdotj7/rodeo.png'],
   },
   other: {
     ...frameMetadata,
