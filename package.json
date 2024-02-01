@@ -6,7 +6,8 @@
     "dev": "next dev",
     "format": "prettier --log-level warn --write .",
     "start": "next start",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "npm install --platform=linux --arch=x64 sharp"
   },
   "keywords": [],
   "author": "@zizzamia",
