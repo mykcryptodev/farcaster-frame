@@ -14,7 +14,15 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
     message: FrameData;
   };
   console.log({ currentStep, accountAddress, message })
-
+  if (currentStep === 0) {
+    await kv.del(accountAddress);
+    await kv.hset(accountAddress, {
+      currentStep: 0,
+      layers: [],
+      hasMinted: false,
+      userNftImageUrl: null,
+    });
+  }
   const selectedLayer = LAYERS[currentStep][message.buttonIndex - 1];
   let currentLayers = await kv.hget(accountAddress, 'layers') as string[] | undefined;
   if (!currentLayers) {
