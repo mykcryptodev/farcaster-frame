@@ -49,14 +49,7 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
   //   userNftImageUrl: null,
   // });
 
-  // mint the nft
-  const sdk = ThirdwebSDK.fromPrivateKey(process.env.PRIVATE_KEY!, NFT_CHAIN_STRING, {
-    secretKey: process.env.THIRDWEB_SECRET_KEY,
-  });
-  const contract = await sdk.getContract(NFT_CONTRACT, "nft-collection");
-  const balance = await contract.erc721.balanceOf(accountAddress);
-
-  const userHasMinted = balance.gt(0) || await kv.hget(accountAddress, 'hasMinted');
+  const userHasMinted = await kv.hget(accountAddress, 'hasMinted');
   // if user has minted, return a static image
   if (userHasMinted) {
     const userNftImageUrl = await kv.hget(accountAddress, 'userNftImageUrl');
