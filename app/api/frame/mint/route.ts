@@ -5,6 +5,8 @@ import { getUser } from '../../utils/getUser';
 import { NFT, ThirdwebSDK } from '@thirdweb-dev/sdk';
 import { StorageDownloader, ThirdwebStorage } from '@thirdweb-dev/storage';
 
+export const maxDuration = 25;
+
 async function getResponse(req: NextRequest): Promise<NextResponse> {
   const { nft, accountAddress, userHasMinted } = await getUser(req) as {
     userHasMinted: boolean;
