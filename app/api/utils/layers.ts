@@ -52,6 +52,33 @@ export const HEADS = [
   }
 ];
 
+export const HATS = [
+  {
+    name: "none",
+    buttonIndex: 1,
+    buttonLabel: "🧑🏼‍🦲",
+    file: null,
+  },
+  {
+    name: "cap",
+    buttonIndex: 2,
+    buttonLabel: "🧢",
+    file: "ipfs://QmY4fXS3tundbZtyzsgL2YiPfPZuuC2EgL7ycaq8vBjgzr/cap.png",
+  },
+  {
+    name: "cowboy",
+    buttonIndex: 3,
+    buttonLabel: "🤠",
+    file: "ipfs://QmY4fXS3tundbZtyzsgL2YiPfPZuuC2EgL7ycaq8vBjgzr/cowboy.png",
+  },
+  {
+    name: "einstein",
+    buttonIndex: 4,
+    buttonLabel: "👨‍🦳",
+    file: "ipfs://QmY4fXS3tundbZtyzsgL2YiPfPZuuC2EgL7ycaq8vBjgzr/einstein.png",
+  }
+];
+
 export const EYES = [
   {
     name: "eyes",
@@ -130,33 +157,6 @@ export const SHIRTS = [
     buttonIndex: 4,
     buttonLabel: "🔥",
     file: "ipfs://QmY4fXS3tundbZtyzsgL2YiPfPZuuC2EgL7ycaq8vBjgzr/flames.png",
-  }
-];
-
-export const HATS = [
-  {
-    name: "none",
-    buttonIndex: 1,
-    buttonLabel: "🧑🏼‍🦲",
-    file: null,
-  },
-  {
-    name: "cap",
-    buttonIndex: 2,
-    buttonLabel: "🧢",
-    file: "ipfs://QmY4fXS3tundbZtyzsgL2YiPfPZuuC2EgL7ycaq8vBjgzr/cap.png",
-  },
-  {
-    name: "cowboy",
-    buttonIndex: 3,
-    buttonLabel: "🤠",
-    file: "ipfs://QmY4fXS3tundbZtyzsgL2YiPfPZuuC2EgL7ycaq8vBjgzr/cowboy.png",
-  },
-  {
-    name: "einstein",
-    buttonIndex: 4,
-    buttonLabel: "👨‍🦳",
-    file: "ipfs://QmY4fXS3tundbZtyzsgL2YiPfPZuuC2EgL7ycaq8vBjgzr/einstein.png",
   }
 ];
 
