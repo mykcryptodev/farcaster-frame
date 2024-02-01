@@ -71,26 +71,14 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
   const contract = await sdk.getContract(NFT_CONTRACT, "nft-collection");
   const count = await contract.erc721.totalCount();
 
-  try {
-    const tx = await contract.erc721.mintTo(accountAddress, {
-      ...nft.metadata,
-      name: nft.metadata.name + ` #${count}`,
-    });
-    console.log({ tx });
-  } catch (e) {
-    return new NextResponse(`
-      <!DOCTYPE html><html><head>
-        <meta property="fc:frame" content="vNext" />
-        <meta property="fc:frame:image" content="https://ipfs.io/ipfs/QmZvYX1iXy4bKJ6xJ8Z7ZyWwCgYX2ZkH5q2Z1KwZ3zJqJ5/1.png" />
-        <meta property="fc:frame:button:1" content="Error Minting Your NFT" />
-        <meta property="fc:frame:button:2" content="Try again" />
-        <meta property="fc:frame:post_url" content="${APP_URL}/api/frame" />
-      </head></html>
-    `);
-  }
+  // we dont wait for the blockchain, we just send off the tx and hope for the best
+  // we only have a few seconds to respond to the user
+  const tx = contract.erc721.mintTo(accountAddress, {
+    ...nft.metadata,
+    name: nft.metadata.name + ` #${count}`,
+  });
 
-
-
+  console.log({ tx });
 
   console.log('updated user as having minted');
 
