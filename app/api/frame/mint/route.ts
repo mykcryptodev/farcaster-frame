@@ -112,7 +112,7 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
   });
 
   console.log('we are going to respond...');
-  console.log({ imageUrl, count})
+  console.log({ imageUrl, count: count.toString() })
 
   return new NextResponse(`
     <!DOCTYPE html><html><head>
