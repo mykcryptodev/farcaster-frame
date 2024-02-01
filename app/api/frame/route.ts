@@ -1,8 +1,9 @@
 import { FrameRequest, getFrameAccountAddress, getFrameMessage } from '@coinbase/onchainkit';
 import { kv } from '@vercel/kv';
 import { NextRequest, NextResponse } from 'next/server';
-import { APP_URL } from '../utils';
+import { APP_URL, NFT_CHAIN_STRING, NFT_CONTRACT } from '../utils';
 import { LAYERS } from '../utils/layers';
+import { ThirdwebSDK } from '@thirdweb-dev/sdk';
 
 async function getResponse(req: NextRequest): Promise<NextResponse> {
   let accountAddress: string | undefined;
@@ -40,15 +41,22 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
   }
 
   // TODO: Remove this reset of everyone when testing is done
-  await kv.del(accountAddress);
-  await kv.hset(accountAddress, {
-    currentStep: 0,
-    layers: [],
-    hasMinted: false,
-    userNftImageUrl: null,
-  });
+  // await kv.del(accountAddress);
+  // await kv.hset(accountAddress, {
+  //   currentStep: 0,
+  //   layers: [],
+  //   hasMinted: false,
+  //   userNftImageUrl: null,
+  // });
 
-  const userHasMinted = await kv.hget(accountAddress, 'hasMinted');
+  // mint the nft
+  const sdk = ThirdwebSDK.fromPrivateKey(process.env.PRIVATE_KEY!, NFT_CHAIN_STRING, {
+    secretKey: process.env.THIRDWEB_SECRET_KEY,
+  });
+  const contract = await sdk.getContract(NFT_CONTRACT, "nft-collection");
+  const balance = await contract.erc721.balanceOf(accountAddress);
+
+  const userHasMinted = balance.gt(0) || await kv.hget(accountAddress, 'hasMinted');
   // if user has minted, return a static image
   if (userHasMinted) {
     const userNftImageUrl = await kv.hget(accountAddress, 'userNftImageUrl');
