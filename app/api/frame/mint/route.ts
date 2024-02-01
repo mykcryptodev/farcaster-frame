@@ -26,6 +26,18 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
   `)
   console.log({ nft, accountAddress, userHasMinted });
 
+  // if user has minted, return a static image
+  if (userHasMinted) {
+    const userNftImageUrl = await kv.hget(accountAddress, 'userNftImageUrl');
+    return new NextResponse(`
+      <!DOCTYPE html><html><head>
+        <meta property="fc:frame" content="vNext" />
+        <meta property="fc:frame:image" content="${userNftImageUrl}" />
+        <meta property="fc:frame:button:1" content="Your NFT" />
+      </head></html>
+    `);
+  };
+
   // TODO: make this prettier
   if (!nft) {
     return new NextResponse(`
@@ -49,17 +61,6 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
       </head></html>
     `);
   }
-
-  // if user has minted, return a static image
-  if (userHasMinted) {
-    return new NextResponse(`
-      <!DOCTYPE html><html><head>
-        <meta property="fc:frame" content="vNext" />
-        <meta property="fc:frame:image" content="${nft.metadata.image}" />
-        <meta property="fc:frame:button:1" content="Your NFT" />
-      </head></html>
-    `);
-  };
 
   console.log(JSON.stringify(nft));
 
