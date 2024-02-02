@@ -14,7 +14,7 @@ import { type MetadataTemplate } from '../../../types/generator';
 
 export const APP_URL = process.env.NODE_ENV === 'production' ? 'https://farcaster-frame-myk.vercel.app' : 'https://8fe8-209-214-123-227.ngrok-free.app';
 export const APP_BANNER = 'https://ipfs.io/ipfs/QmXAAdmuwiooY88E6KdZ5xdhqmHm6qxJb4QxNWhRUe6jeo/mykbois.png';
-export const NFT_CONTRACT = "0x8d28841C6Fcd1dB01151f4BF682b722446B8118d";
+export const NFT_CONTRACT = "0xcEC23523ff8a6086B876B2beF9baE95e5C438e47";
 export const NFT_CHAIN_STRING = "base-sepolia-testnet";
 
 interface LayerOption {
