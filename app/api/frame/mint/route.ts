@@ -98,32 +98,46 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
 
   console.log('updated user as having minted');
 
-  const downloader = new StorageDownloader({
-    secretKey: process.env.THIRDWEB_SECRET_KEY,
-  });
-  const storage = new ThirdwebStorage({
-    secretKey: process.env.THIRDWEB_SECRET_KEY,
-    downloader,
-  });
-  const image = await storage.download(nft.metadata.image as string);
-  const imageUrl = image.url;
+  try {
+    const downloader = new StorageDownloader({
+      secretKey: process.env.THIRDWEB_SECRET_KEY,
+    });
+    const storage = new ThirdwebStorage({
+      secretKey: process.env.THIRDWEB_SECRET_KEY,
+      downloader,
+    });
+    const image = await storage.download(nft.metadata.image as string);
+    const imageUrl = image.url;
+  
+    // set the user as having minted
+    await kv.hset(accountAddress, { 
+      hasMinted: true,
+      userNftImageUrl: imageUrl,
+      userNftTokenId: count.toString(),
+    });
+  
+    return new NextResponse(`
+      <!DOCTYPE html><html><head>
+        <meta property="fc:frame" content="vNext" />
+        <meta property="fc:frame:image" content="${imageUrl}" />
+        <meta property="fc:frame:button:1" content="#${count.toString()}" />
+        <meta property="fc:frame:button:2" content="Mint Successful!" />
+        <meta property="fc:frame:post_url" content="${APP_URL}/api/mynft" />
+      </head></html>
+    `);
+  } catch (e) {
+    console.log('error getting image', e);
+    return new NextResponse(`
+      <!DOCTYPE html><html><head>
+        <meta property="fc:frame" content="vNext" />
+        <meta property="fc:frame:image" content="${APP_BANNER}" />
+        <meta property="fc:frame:button:1" content="Something went wrong" />
+        <meta property="fc:frame:button:2" content="Start over" />
+        <meta property="fc:frame:post_url" content="${APP_URL}/api/frame" />
+      </head></html>
+    `);
+  }
 
-  // set the user as having minted
-  await kv.hset(accountAddress, { 
-    hasMinted: true,
-    userNftImageUrl: imageUrl,
-    userNftTokenId: count.toString(),
-  });
-
-  return new NextResponse(`
-    <!DOCTYPE html><html><head>
-      <meta property="fc:frame" content="vNext" />
-      <meta property="fc:frame:image" content="${imageUrl}" />
-      <meta property="fc:frame:button:1" content="#${count.toString()}" />
-      <meta property="fc:frame:button:2" content="Mint Successful!" />
-      <meta property="fc:frame:post_url" content="${APP_URL}/api/mynft" />
-    </head></html>
-  `);
 }
 
 export async function POST(req: NextRequest): Promise<Response> {
