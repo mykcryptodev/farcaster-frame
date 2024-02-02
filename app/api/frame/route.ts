@@ -42,18 +42,21 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
   }
 
   // users can start over if they havent minted yet
-  await kv.del(accountAddress);
-  await kv.hset(accountAddress, {
-    currentStep: 0,
-    layers: [],
-    hasMinted: false,
-    userNftImageUrl: null,
-    userNftTokenId: null,
-  });
+  try {
+    await kv.del(accountAddress);
+    await kv.hset(accountAddress, {
+      currentStep: 0,
+      layers: [],
+      hasMinted: false,
+      userNftImageUrl: null,
+      userNftTokenId: null,
+    });
+  } catch (e) {
+    console.log('error deleting user', e);
+  }
 
   // get the current step
   let currentStep = await kv.hget(accountAddress, 'currentStep');
-  let layers = await kv.hget(accountAddress, 'layers');
   // if there is no current step, set it to zero
   if (!currentStep) {
     await kv.hset(accountAddress, { currentStep: 0 });
