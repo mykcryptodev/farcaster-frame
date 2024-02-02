@@ -13,8 +13,6 @@ export const getUser = async (req: NextRequest) => {
     const { isValid, message } = await getFrameMessage(body);
     Message = message;
 
-    console.log({ message, isValid })
-  
     if (isValid) {
       accountAddress = await getFrameAccountAddress(message, { NEYNAR_API_KEY: 'NEYNAR_API_DOCS' });
     } else {
@@ -39,8 +37,13 @@ export const getUser = async (req: NextRequest) => {
   }
 
   const userHasMinted = await kv.hget(accountAddress, 'hasMinted');
-  // this will show the owned nft if it exists
-  await showOwnedNft(accountAddress);
+  if (userHasMinted) {
+    // this will show the owned nft if it exists
+    const response = await showOwnedNft(req, accountAddress);
+    if (response) {
+      return response;
+    }
+  }
 
   // get the current step
   let currentStep: number | undefined | null = await kv.hget(accountAddress, 'currentStep');

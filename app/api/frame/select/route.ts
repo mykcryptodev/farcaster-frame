@@ -12,7 +12,7 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
     accountAddress: string;
     message: FrameData;
   };
-  console.log({ currentStep, accountAddress, message })
+
   if (currentStep === 0) {
     await kv.del(accountAddress);
     await kv.hset(accountAddress, {
@@ -32,7 +32,6 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
   currentLayers[currentStep] = selectedLayer.name;
   await kv.hset(accountAddress, { layers: currentLayers });
 
-  console.log({ currentLayers })
   console.log(currentLayers.map(layer => {
     const layerData = LAYERS.flat().find(l => l.name === layer);
     if (!layerData) {

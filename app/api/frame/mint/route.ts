@@ -4,6 +4,7 @@ import { APP_BANNER, APP_URL, NFT_CHAIN_STRING, NFT_CONTRACT } from '../../utils
 import { getUser } from '../../utils/getUser';
 import { NFT, ThirdwebSDK } from '@thirdweb-dev/sdk';
 import { StorageDownloader, ThirdwebStorage } from '@thirdweb-dev/storage';
+import { showOwnedNft } from '../../utils/showOwnedNft';
 
 export const maxDuration = 25;
 
@@ -26,7 +27,6 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
   
   
   `)
-  console.log({ nft, accountAddress, userHasMinted });
 
   // if user has minted, return a static image
   if (userHasMinted) {
@@ -39,8 +39,16 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
       </head></html>
     `);
   };
+  // fall back to showing the owned nft if it exists in case state got messed up
+  try {
+    const response = await showOwnedNft(req, accountAddress);
+    if (response) {
+      return response;
+    }
+  } catch (e) {
+    console.log('show nft error', e);
+  }
 
-  // TODO: make this prettier
   if (!nft) {
     return new NextResponse(`
       <!DOCTYPE html><html><head>
@@ -105,9 +113,6 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
     userNftImageUrl: imageUrl,
     userNftTokenId: count.toString(),
   });
-
-  console.log('we are going to respond...');
-  console.log({ imageUrl, count: count.toString() })
 
   return new NextResponse(`
     <!DOCTYPE html><html><head>

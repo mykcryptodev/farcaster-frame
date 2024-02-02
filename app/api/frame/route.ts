@@ -1,9 +1,8 @@
 import { FrameRequest, getFrameAccountAddress, getFrameMessage } from '@coinbase/onchainkit';
 import { kv } from '@vercel/kv';
 import { NextRequest, NextResponse } from 'next/server';
-import { APP_BANNER, APP_URL, NFT_CHAIN_STRING, NFT_CONTRACT } from '../utils';
+import { APP_BANNER, APP_URL } from '../utils';
 import { LAYERS } from '../utils/layers';
-import { ThirdwebSDK } from '@thirdweb-dev/sdk';
 import { showOwnedNft } from '../utils/showOwnedNft';
 
 async function getResponse(req: NextRequest): Promise<NextResponse> {
@@ -11,8 +10,6 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
   try {
     const body: FrameRequest = await req.json();
     const { isValid, message } = await getFrameMessage(body);
-
-    console.log({ message, isValid })
   
     if (isValid) {
       accountAddress = await getFrameAccountAddress(message, { NEYNAR_API_KEY: 'NEYNAR_API_DOCS' });
@@ -39,7 +36,10 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
   }
 
   // this will show the owned nft if it exists
-  await showOwnedNft(accountAddress);
+  const response = await showOwnedNft(req, accountAddress);
+  if (response) {
+    return response;
+  }
 
   // users can start over if they havent minted yet
   await kv.del(accountAddress);
@@ -54,14 +54,11 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
   // get the current step
   let currentStep = await kv.hget(accountAddress, 'currentStep');
   let layers = await kv.hget(accountAddress, 'layers');
-  console.log({ currentStep, accountAddress, layers });
   // if there is no current step, set it to zero
   if (!currentStep) {
     await kv.hset(accountAddress, { currentStep: 0 });
     currentStep = 0;
   }
-
-  console.log({ currentStep, accountAddress })
 
   const nextStepOptions = LAYERS[0].map((layer, index) => {
     return `<meta property="fc:frame:button:${index + 1}" content="${layer.buttonLabel}" />`;
