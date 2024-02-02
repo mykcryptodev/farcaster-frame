@@ -3,6 +3,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { APP_BANNER, APP_URL, NFT_CHAIN_STRING, NFT_CONTRACT } from "./index";
 import { kv } from "@vercel/kv";
 import { NFT, ThirdwebSDK } from "@thirdweb-dev/sdk";
+import { StorageDownloader, ThirdwebStorage } from "@thirdweb-dev/storage";
+import { showOwnedNft } from "./showOwnedNft";
 
 export const getUser = async (req: NextRequest) => {
   let accountAddress: string | undefined;
@@ -38,30 +40,9 @@ export const getUser = async (req: NextRequest) => {
     </head></html>`);
   }
 
-  // check balance onchain
-  const sdk = ThirdwebSDK.fromPrivateKey(process.env.PRIVATE_KEY!, NFT_CHAIN_STRING, {
-    secretKey: process.env.THIRDWEB_SECRET_KEY,
-  });
-  const contract = await sdk.getContract(NFT_CONTRACT, "nft-collection");
-  const balance = await contract.erc721.balanceOf(accountAddress);
-
   const userHasMinted = await kv.hget(accountAddress, 'hasMinted');
-  if (!userHasMinted) {
-    await kv.hset(accountAddress, { hasMinted: false });
-  }
-  console.log({ userHasMinted });
-  // if user has minted, return a static image
-  if (userHasMinted ) {
-    const userNftImageUrl = await kv.hget(accountAddress, 'userNftImageUrl');
-    const userNftTokenId = await kv.hget(accountAddress, 'userNftTokenId');
-    return new NextResponse(`<!DOCTYPE html><html><head>
-      <meta property="fc:frame" content="vNext" />
-      <meta property="fc:frame:image" content="${userNftImageUrl}" />
-      <meta property="fc:frame:button:1" content="${userNftTokenId}" />
-      <meta property="fc:frame:button:2" content="Your NFT" />
-      <meta property="fc:frame:post_url" content="${APP_URL}/api/frame" />
-    </head></html>`);
-  }
+  // this will show the owned nft if it exists
+  showOwnedNft(req, accountAddress);
 
   // get the current step
   let currentStep: number | undefined | null = await kv.hget(accountAddress, 'currentStep');
