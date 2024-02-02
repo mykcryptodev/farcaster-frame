@@ -41,18 +41,27 @@ export const getUser = async (req: NextRequest) => {
     accountAddress = '0x9036464e4ecD2d40d21EE38a0398AEdD6805a09B'
   }
 
+  // check balance onchain
+  const sdk = ThirdwebSDK.fromPrivateKey(process.env.PRIVATE_KEY!, NFT_CHAIN_STRING, {
+    secretKey: process.env.THIRDWEB_SECRET_KEY,
+  });
+  const contract = await sdk.getContract(NFT_CONTRACT, "nft-collection");
+  const balance = await contract.erc721.balanceOf(accountAddress);
+
   const userHasMinted = await kv.hget(accountAddress, 'hasMinted');
   if (!userHasMinted) {
     await kv.hset(accountAddress, { hasMinted: false });
   }
   console.log({ userHasMinted });
   // if user has minted, return a static image
-  if (userHasMinted) {
-    // TODO: fetch the actual nft of this user and display it
+  if (userHasMinted || balance.gt(0)) {
+    const userNftImageUrl = await kv.hget(accountAddress, 'userNftImageUrl');
+    const userNftTokenId = await kv.hget(accountAddress, 'userNftTokenId');
     return new NextResponse(`<!DOCTYPE html><html><head>
       <meta property="fc:frame" content="vNext" />
-      <meta property="fc:frame:image" content="https://ipfs.io/ipfs/QmZvYX1iXy4bKJ6xJ8Z7ZyWwCgYX2ZkH5q2Z1KwZ3zJqJ5/1.png" />
-      <meta property="fc:frame:button:1" content="Your NFT" />
+      <meta property="fc:frame:image" content="${userNftImageUrl}" />
+      <meta property="fc:frame:button:1" content="${userNftTokenId}" />
+      <meta property="fc:frame:button:2" content="Your NFT" />
       <meta property="fc:frame:post_url" content="${APP_URL}/api/frame" />
     </head></html>`);
   }

@@ -40,27 +40,39 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
     accountAddress = '0x9036464e4ecD2d40d21EE38a0398AEdD6805a09B'
   }
 
-  // TODO: Remove this reset of everyone when testing is done
-  // await kv.del(accountAddress);
-  // await kv.hset(accountAddress, {
-  //   currentStep: 0,
-  //   layers: [],
-  //   hasMinted: false,
-  //   userNftImageUrl: null,
-  // });
+  // check balance onchain
+  const sdk = ThirdwebSDK.fromPrivateKey(process.env.PRIVATE_KEY!, NFT_CHAIN_STRING, {
+    secretKey: process.env.THIRDWEB_SECRET_KEY,
+  });
+  const contract = await sdk.getContract(NFT_CONTRACT, "nft-collection");
+  const balance = await contract.erc721.balanceOf(accountAddress);
 
   const userHasMinted = await kv.hget(accountAddress, 'hasMinted');
   // if user has minted, return a static image
-  if (userHasMinted) {
-    const userNftImageUrl = await kv.hget(accountAddress, 'userNftImageUrl');
+  if (userHasMinted || balance.gt(0)) {
+    const [userNftImageUrl, userNftTokenId] = await Promise.all([
+      kv.hget(accountAddress, 'userNftImageUrl'),
+      kv.hget(accountAddress, 'userNftTokenId'),
+    ]);
     // TODO: fetch the actual nft of this user and display it
     return new NextResponse(`<!DOCTYPE html><html><head>
       <meta property="fc:frame" content="vNext" />
       <meta property="fc:frame:image" content="${userNftImageUrl}" />
-      <meta property="fc:frame:button:1" content="Your NFT Has Been Minted!" />
+      <meta property="fc:frame:button:1" content="#${userNftTokenId}" />
+      <meta property="fc:frame:button:2" content="Your NFT Has Been Minted!" />
       <meta property="fc:frame:post_url" content="${APP_URL}/api/frame" />
     </head></html>`);
   }
+
+  // users can start over if they havent minted yet
+  await kv.del(accountAddress);
+  await kv.hset(accountAddress, {
+    currentStep: 0,
+    layers: [],
+    hasMinted: false,
+    userNftImageUrl: null,
+    userNftTokenId: null,
+  });
 
   // get the current step
   let currentStep = await kv.hget(accountAddress, 'currentStep');

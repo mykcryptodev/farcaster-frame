@@ -102,6 +102,7 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
   await kv.hset(accountAddress, { 
     hasMinted: true,
     userNftImageUrl: imageUrl,
+    userNftTokenId: count.toString(),
   });
 
   console.log('we are going to respond...');
