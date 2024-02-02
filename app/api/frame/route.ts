@@ -36,7 +36,7 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
   }
 
   // this will show the owned nft if it exists
-  const response = await showOwnedNft(req, accountAddress);
+  const response = await showOwnedNft(accountAddress);
   if (response) {
     return response;
   }

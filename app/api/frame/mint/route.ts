@@ -41,7 +41,7 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
   };
   // fall back to showing the owned nft if it exists in case state got messed up
   try {
-    const response = await showOwnedNft(req, accountAddress);
+    const response = await showOwnedNft(accountAddress);
     if (response) {
       return response;
     }
@@ -120,7 +120,7 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
       <meta property="fc:frame:image" content="${imageUrl}" />
       <meta property="fc:frame:button:1" content="#${count.toString()}" />
       <meta property="fc:frame:button:2" content="Mint Successful!" />
-      <meta property="fc:frame:post_url" content="${APP_URL}/api/frame" />
+      <meta property="fc:frame:post_url" content="${APP_URL}/api/mynft" />
     </head></html>
   `);
 }

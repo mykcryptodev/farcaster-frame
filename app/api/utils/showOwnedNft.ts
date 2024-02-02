@@ -3,7 +3,7 @@ import { APP_URL, NFT_CHAIN_STRING, NFT_CONTRACT } from ".";
 import { NextRequest, NextResponse } from "next/server";
 import { StorageDownloader, ThirdwebStorage } from "@thirdweb-dev/storage";
 
-export const showOwnedNft = async (req:NextRequest, accountAddress: string) => {
+export const showOwnedNft = async (accountAddress: string) => {
   // check balance onchain
   const sdk = ThirdwebSDK.fromPrivateKey(process.env.PRIVATE_KEY!, NFT_CHAIN_STRING, {
     secretKey: process.env.THIRDWEB_SECRET_KEY,
