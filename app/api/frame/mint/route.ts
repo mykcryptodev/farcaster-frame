@@ -36,6 +36,7 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
         <meta property="fc:frame" content="vNext" />
         <meta property="fc:frame:image" content="${userNftImageUrl}" />
         <meta property="fc:frame:button:1" content="Your NFT" />
+        <meta property="fc:frame:post_url" content="${APP_URL}/api/mynft" />
       </head></html>
     `);
   };
