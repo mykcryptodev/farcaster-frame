@@ -5,6 +5,7 @@ export const BACKGROUNDS = [
     buttonIndex: 1,
     buttonLabel: "🟦",
     file: "ipfs://QmY4fXS3tundbZtyzsgL2YiPfPZuuC2EgL7ycaq8vBjgzr/blue.png",
+    bigFile: "ipfs://QmYxqqGoKYQzYxcBjZL69tWyyY3cx7wF795m2iEEJPMs68/blue.png",
   },
   {
     name: "green",
@@ -12,6 +13,7 @@ export const BACKGROUNDS = [
     buttonIndex: 2,
     buttonLabel: "🟩",
     file: "ipfs://QmY4fXS3tundbZtyzsgL2YiPfPZuuC2EgL7ycaq8vBjgzr/green.png",
+    bigFile: "ipfs://QmYxqqGoKYQzYxcBjZL69tWyyY3cx7wF795m2iEEJPMs68/green.png",
   },
   {
     name: "yellow",
@@ -19,6 +21,7 @@ export const BACKGROUNDS = [
     buttonIndex: 3,
     buttonLabel: "🟨",
     file: "ipfs://QmY4fXS3tundbZtyzsgL2YiPfPZuuC2EgL7ycaq8vBjgzr/wheat.png",
+    bigFile: "ipfs://QmYxqqGoKYQzYxcBjZL69tWyyY3cx7wF795m2iEEJPMs68/wheat.png",
   },
   {
     name: "orange",
@@ -26,6 +29,7 @@ export const BACKGROUNDS = [
     buttonIndex: 4,
     buttonLabel: "🟧",
     file: "ipfs://QmY4fXS3tundbZtyzsgL2YiPfPZuuC2EgL7ycaq8vBjgzr/orange.png",
+    bigFile: "ipfs://QmYxqqGoKYQzYxcBjZL69tWyyY3cx7wF795m2iEEJPMs68/orange.png",
   }
 ];
 
@@ -190,4 +194,11 @@ export const LAYERS = [
   EYES,
   FACIAL_HAIR,
   SHIRTS,
-];
+] as {
+  name: string;
+  layer: string;
+  buttonIndex: number;
+  buttonLabel: string;
+  file: string | null;
+  bigFile?: string;
+}[][];

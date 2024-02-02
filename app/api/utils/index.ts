@@ -14,17 +14,8 @@ import { type MetadataTemplate } from '../../../types/generator';
 
 export const APP_URL = process.env.NODE_ENV === 'production' ? 'https://farcaster-frame-myk.vercel.app' : 'https://8fe8-209-214-123-227.ngrok-free.app';
 export const APP_BANNER = 'https://ipfs.io/ipfs/QmXAzLJRwNFuE7S6L2EZdJ51yuMQJtiXKdRVURTmTdotj7/rodeo.png';
-export const NFT_CONTRACT = "0x9456Dc56A7B1AD55F100a92bFd7CCb7dC87B9B10";
+export const NFT_CONTRACT = "0x9E9292C0F726652192dff7A265381C89B81f139d";
 export const NFT_CHAIN_STRING = "avalanche-fuji";
-export const STEPS = [
-  "start",
-  "background",
-  "head",
-  "eyes",
-  "facial-hair",
-  "shirt",
-  "hat",
-];
 
 interface LayerOption {
   name: string;

@@ -5,7 +5,6 @@ import { getUser } from '../../utils/getUser';
 import { LAYERS } from '../../utils/layers';
 import { FrameData } from '@coinbase/onchainkit';
 import { StorageDownloader, ThirdwebStorage } from '@thirdweb-dev/storage';
-// import {v2 as cloudinary} from 'cloudinary';
 
 async function getResponse(req: NextRequest): Promise<NextResponse> {
   const { currentStep, accountAddress, message } = await getUser(req) as {
@@ -21,6 +20,7 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
       layers: [],
       hasMinted: false,
       userNftImageUrl: null,
+      userTokenId: null,
     });
   }
   const selectedLayer = LAYERS[currentStep][message.buttonIndex - 1];
@@ -50,39 +50,52 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
         }]
       }
     }
-  }).filter(Boolean) as any,)
+  }).filter(Boolean) as any,);
 
-  const nftGeneration = await generateNfts({
-    content: {
-      layers: currentLayers.map(layer => {
-        const layerData = LAYERS.flat().find(l => l.name === layer);
-        if (!layerData) {
-          // continue to the next layer
-          return;
-        }
-        if (layerData.file) {
-          return {
-            name: layerData.layer,
-            probability: 1,
-            options: [{
-              name: layerData.name,
-              file: layerData.file,
-              weight: 100,
-            }]
+  const nextStep = currentStep + 1;
+  const nextStepLayers = LAYERS[nextStep];
+  const isFinalStep = !nextStepLayers;
+
+  const generatedNfts = async (props: { isPreview: boolean, numNfts: number }) => {
+    return await generateNfts({
+      content: {
+        layers: currentLayers?.map(layer => {
+          const layerData = LAYERS.flat().find(l => l.name === layer);
+          if (!layerData) {
+            // continue to the next layer
+            return;
           }
-        }
-      }).filter(Boolean) as any,
-      metadataTemplate: {
-        name: "Myk Bois",
-        description: "Myk Bois are created by you in a farcaster frame.",
-        external_url: "https://x.com/mykcryptodev",
+          if (layerData.file) {
+            return {
+              name: layerData.layer,
+              probability: 1,
+              options: [{
+                name: layerData.name,
+                // use the big file (background) so that it doesnt get cropped on farcaster
+                // if this is not a preview and we are actually making the nft, use the regular sized background
+                file: props.isPreview ? layerData.bigFile ?? layerData.file : layerData.file,
+                weight: 100,
+              }]
+            }
+          }
+        }).filter(Boolean) as any,
+        metadataTemplate: {
+          name: "Myk Bois",
+          description: "Myk Bois are created by you in a farcaster frame.",
+          external_url: "https://x.com/mykcryptodev",
+        },
       },
-    },
-    numNfts: 1,
-  });
-  const nft = nftGeneration.nfts?.[0];
-  console.log({ nft })
-  if (!nft) {
+      numNfts: props.numNfts,
+    });
+  };
+
+  const [nftPreviewGeneration, nftGeneration] = await Promise.all([
+    generatedNfts({ isPreview: true, numNfts: 1 }),
+    isFinalStep ? generatedNfts({ isPreview: false, numNfts: 1 }) : Promise.resolve(),
+  ]);
+  const nftPreview = nftPreviewGeneration.nfts?.[0];
+  const nft = nftGeneration?.nfts?.[0];
+  if (!nftPreview) {
     throw new Error('No NFT generated');
   }
   const downloader = new StorageDownloader({
@@ -92,48 +105,10 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
     secretKey: process.env.THIRDWEB_SECRET_KEY,
     downloader,
   });
-  const image = await storage.download(nft.metadata.image as string);
-  const imageUrl = image.url;
-  // cloudinary.config({ 
-  //   cloud_name: 'djiho4jtj', 
-  //   api_key: process.env.CLOUDINARY_API_KEY, 
-  //   api_secret: process.env.CLOUDINARY_SECRET_KEY, 
-  // });
-  // const backgroundLayer = LAYERS[0].find(layer => layer.file && layer.name === currentLayers?.[0]);
-  // const backgroundLayerFile = backgroundLayer?.file;
-  // const backgroundLayerImage = await storage.download(backgroundLayerFile as string);
-  // const backgroundLayerImageUrl = backgroundLayerImage.url;
-  // const backgroundLayerName = LAYERS[0].find(layer => layer.file && layer.name === currentLayers?.[0])?.name as string;
-  // console.log({ backgroundLayerName, imageUrl })
-
-  // try {
-  //   const uploadedImage = await cloudinary.uploader.upload(imageUrl, {
-  //     public_id: 'mochimon',
-  //     overwrite: true,
-  //     invalidate: true,
-  //   });
-  //   const uploadedBg = await cloudinary.uploader.upload(backgroundLayerImageUrl, {
-  //     public_id: backgroundLayerName,
-  //     overwrite: true,
-  //     invalidate: true,
-  //   })
-  //   console.log({ uploadedImage, uploadedBg })
-  //   const combinedImageUrl = cloudinary.url(uploadedBg.public_id, {
-  //     transformation: [
-  //       { width: 1024, height: 576, crop: "fill" }, // Resize the background to fit Twitter's dimensions
-  //       { overlay: uploadedImage.public_id, width: 100, height: 100, gravity: "center", crop: "fit" } // Add your image as an overlay
-  //     ]
-  //   });
-  //   console.log({ imageUrl, combinedImageUrl })
-  // } catch (e) {
-  //   console.error(e);
-  // }
-
-  const nextStep = currentStep + 1;
+  const previewImage = await storage.download(nftPreview?.metadata.image as string);
+  const previewImageUrl = previewImage.url;
 
   await kv.hset(accountAddress, { currentStep: nextStep });
-
-  const nextStepLayers = LAYERS[nextStep];
 
   // if there are no more layers, return the image
   // TODO: make this a mint button
@@ -142,7 +117,7 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
     return new NextResponse(`
       <!DOCTYPE html><html><head>
         <meta property="fc:frame" content="vNext" />
-        <meta property="fc:frame:image" content="${imageUrl}" />
+        <meta property="fc:frame:image" content="${previewImageUrl}" />
         <meta property="fc:frame:button:1" content="Mint your NFT!" />
         <meta property="fc:frame:post_url" content="${APP_URL}/api/frame/mint" />
       </head></html>
@@ -156,7 +131,7 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
   return new NextResponse(`
     <!DOCTYPE html><html><head>
       <meta property="fc:frame" content="vNext" />
-      <meta property="fc:frame:image" content="${imageUrl}" />
+      <meta property="fc:frame:image" content="${previewImageUrl}" />
       ${nextStepOptions.join('\n')}
       <meta property="fc:frame:post_url" content="${APP_URL}/api/frame/select" />
     </head></html>
