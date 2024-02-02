@@ -1,7 +1,7 @@
 import { FrameRequest, getFrameAccountAddress, getFrameMessage } from '@coinbase/onchainkit';
 import { kv } from '@vercel/kv';
 import { NextRequest, NextResponse } from 'next/server';
-import { APP_URL, NFT_CHAIN_STRING, NFT_CONTRACT } from '../utils';
+import { APP_BANNER, APP_URL, NFT_CHAIN_STRING, NFT_CONTRACT } from '../utils';
 import { LAYERS } from '../utils/layers';
 import { ThirdwebSDK } from '@thirdweb-dev/sdk';
 import { showOwnedNft } from '../utils/showOwnedNft';
@@ -20,8 +20,8 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
       // TDOD: make this an error
       return new NextResponse(`<!DOCTYPE html><html><head>
         <meta property="fc:frame" content="vNext" />
-        <meta property="fc:frame:image" content="https://ipfs.io/ipfs/QmZvYX1iXy4bKJ6xJ8Z7ZyWwCgYX2ZkH5q2Z1KwZ3zJqJ5/1.png" />
-        <meta property="fc:frame:button:1" content="Your NFT" />
+        <meta property="fc:frame:image" content="${APP_BANNER}" />
+        <meta property="fc:frame:button:1" content="Invalid Message" />
         <meta property="fc:frame:post_url" content="${APP_URL}/api/frame" />
       </head></html>`);
     }
@@ -30,19 +30,16 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
   }
 
   if (!accountAddress) {
-      console.log({ noAccountAddress: true, accountAddress });
-      // TODO: fetch the actual nft of this user and display it
-    //   return new NextResponse(`<!DOCTYPE html><html><head>
-    //   <meta property="fc:frame" content="vNext" />
-    //   <meta property="fc:frame:image" content="https://ipfs.io/ipfs/QmZvYX1iXy4bKJ6xJ8Z7ZyWwCgYX2ZkH5q2Z1KwZ3zJqJ5/1.png" />
-    //   <meta property="fc:frame:button:1" content="Your NFT" />
-    //   <meta property="fc:frame:post_url" content="${APP_URL}/api/frame" />
-    // </head></html>`);
-    accountAddress = '0x9036464e4ecD2d40d21EE38a0398AEdD6805a09B'
+    return new NextResponse(`<!DOCTYPE html><html><head>
+      <meta property="fc:frame" content="vNext" />
+      <meta property="fc:frame:image" content="${APP_BANNER}" />
+      <meta property="fc:frame:button:1" content="Connect a wallet" />
+      <meta property="fc:frame:post_url" content="${APP_URL}/api/frame" />
+    </head></html>`);
   }
 
   // this will show the owned nft if it exists
-  showOwnedNft(req, accountAddress);
+  await showOwnedNft(accountAddress);
 
   // users can start over if they havent minted yet
   await kv.del(accountAddress);

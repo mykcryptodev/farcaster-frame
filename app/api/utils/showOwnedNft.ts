@@ -1,10 +1,10 @@
 import { ThirdwebSDK } from "@thirdweb-dev/sdk";
 import { APP_URL, NFT_CHAIN_STRING, NFT_CONTRACT } from ".";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { StorageDownloader, ThirdwebStorage } from "@thirdweb-dev/storage";
 import { kv } from "@vercel/kv";
 
-export const showOwnedNft = async (req: NextRequest, accountAddress: string) => {
+export const showOwnedNft = async (accountAddress: string) => {
   // check balance onchain
   const sdk = ThirdwebSDK.fromPrivateKey(process.env.PRIVATE_KEY!, NFT_CHAIN_STRING, {
     secretKey: process.env.THIRDWEB_SECRET_KEY,
@@ -35,4 +35,5 @@ export const showOwnedNft = async (req: NextRequest, accountAddress: string) => 
       <meta property="fc:frame:post_url" content="${APP_URL}/api/frame" />
     </head></html>`);
   }
+  return;
 };

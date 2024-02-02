@@ -1,9 +1,8 @@
 import { FrameData, FrameRequest, getFrameAccountAddress, getFrameMessage } from "@coinbase/onchainkit";
 import { NextRequest, NextResponse } from "next/server";
-import { APP_BANNER, APP_URL, NFT_CHAIN_STRING, NFT_CONTRACT } from "./index";
+import { APP_BANNER, APP_URL } from "./index";
 import { kv } from "@vercel/kv";
-import { NFT, ThirdwebSDK } from "@thirdweb-dev/sdk";
-import { StorageDownloader, ThirdwebStorage } from "@thirdweb-dev/storage";
+import { NFT } from "@thirdweb-dev/sdk";
 import { showOwnedNft } from "./showOwnedNft";
 
 export const getUser = async (req: NextRequest) => {
@@ -19,11 +18,10 @@ export const getUser = async (req: NextRequest) => {
     if (isValid) {
       accountAddress = await getFrameAccountAddress(message, { NEYNAR_API_KEY: 'NEYNAR_API_DOCS' });
     } else {
-      // TDOD: make this an error
       return new NextResponse(`<!DOCTYPE html><html><head>
         <meta property="fc:frame" content="vNext" />
-        <meta property="fc:frame:image" content="https://ipfs.io/ipfs/QmZvYX1iXy4bKJ6xJ8Z7ZyWwCgYX2ZkH5q2Z1KwZ3zJqJ5/1.png" />
-        <meta property="fc:frame:button:1" content="Your NFT" />
+        <meta property="fc:frame:image" content="${APP_BANNER}" />
+        <meta property="fc:frame:button:1" content="Invalid Message" />
         <meta property="fc:frame:post_url" content="${APP_URL}/api/frame" />
       </head></html>`);
     }
@@ -42,7 +40,7 @@ export const getUser = async (req: NextRequest) => {
 
   const userHasMinted = await kv.hget(accountAddress, 'hasMinted');
   // this will show the owned nft if it exists
-  showOwnedNft(req, accountAddress);
+  await showOwnedNft(accountAddress);
 
   // get the current step
   let currentStep: number | undefined | null = await kv.hget(accountAddress, 'currentStep');
