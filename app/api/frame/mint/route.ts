@@ -1,6 +1,6 @@
 import { kv } from '@vercel/kv';
 import { NextRequest, NextResponse } from 'next/server';
-import { APP_URL, NFT_CHAIN_STRING, NFT_CONTRACT } from '../../utils';
+import { APP_BANNER, APP_URL, NFT_CHAIN_STRING, NFT_CONTRACT } from '../../utils';
 import { getUser } from '../../utils/getUser';
 import { NFT, ThirdwebSDK } from '@thirdweb-dev/sdk';
 import { StorageDownloader, ThirdwebStorage } from '@thirdweb-dev/storage';
@@ -45,8 +45,9 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
     return new NextResponse(`
       <!DOCTYPE html><html><head>
         <meta property="fc:frame" content="vNext" />
-        <meta property="fc:frame:image" content="https://ipfs.io/ipfs/QmZvYX1iXy4bKJ6xJ8Z7ZyWwCgYX2ZkH5q2Z1KwZ3zJqJ5/1.png" />
-        <meta property="fc:frame:button:1" content="Make an NFT" />
+        <meta property="fc:frame:image" content="${APP_BANNER}" />
+        <meta property="fc:frame:button:1" content="Something went wrong" />
+        <meta property="fc:frame:button:2" content="Start over" />
         <meta property="fc:frame:post_url" content="${APP_URL}/api/frame" />
       </head></html>
     `);
@@ -57,8 +58,8 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
     return new NextResponse(`
       <!DOCTYPE html><html><head>
         <meta property="fc:frame" content="vNext" />
-        <meta property="fc:frame:image" content="https://ipfs.io/ipfs/QmZvYX1iXy4bKJ6xJ8Z7ZyWwCgYX2ZkH5q2Z1KwZ3zJqJ5/1.png" />
-        <meta property="fc:frame:button:1" content="Your NFT" />
+        <meta property="fc:frame:image" content="${APP_BANNER}" />
+        <meta property="fc:frame:button:1" content="Connect a wallet to mmake an NFT" />
         <meta property="fc:frame:post_url" content="${APP_URL}/api/frame" />
       </head></html>
     `);

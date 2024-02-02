@@ -13,7 +13,8 @@ import sharp from 'sharp';
 import { type MetadataTemplate } from '../../../types/generator';
 
 export const APP_URL = process.env.NODE_ENV === 'production' ? 'https://farcaster-frame-myk.vercel.app' : 'https://8fe8-209-214-123-227.ngrok-free.app';
-export const NFT_CONTRACT = "0xB38b92589abFB6d5c3b52CBB22EF64497f29f6a4";
+export const APP_BANNER = 'https://ipfs.io/ipfs/QmXAzLJRwNFuE7S6L2EZdJ51yuMQJtiXKdRVURTmTdotj7/rodeo.png';
+export const NFT_CONTRACT = "0x9456Dc56A7B1AD55F100a92bFd7CCb7dC87B9B10";
 export const NFT_CHAIN_STRING = "avalanche-fuji";
 export const STEPS = [
   "start",

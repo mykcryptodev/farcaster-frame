@@ -1,12 +1,12 @@
 import { getFrameMetadata } from '@coinbase/onchainkit';
 import type { Metadata } from 'next';
-import { APP_URL } from './api/utils';
+import { APP_BANNER, APP_URL } from './api/utils';
 
 const frameMetadata = getFrameMetadata({
   buttons: [{
     label: "Get Started"
   }],
-  image: 'https://ipfs.io/ipfs/QmXAzLJRwNFuE7S6L2EZdJ51yuMQJtiXKdRVURTmTdotj7/rodeo.png',
+  image: APP_BANNER,
   post_url: `${APP_URL}/api/frame`,
 });
 
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'myk.eth',
     description: 'LFG',
-    images: ['https://ipfs.io/ipfs/QmXAzLJRwNFuE7S6L2EZdJ51yuMQJtiXKdRVURTmTdotj7/rodeo.png'],
+    images: [APP_BANNER],
   },
   other: {
     ...frameMetadata,

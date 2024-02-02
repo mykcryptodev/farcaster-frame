@@ -47,9 +47,8 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
   const contract = await sdk.getContract(NFT_CONTRACT, "nft-collection");
   const balance = await contract.erc721.balanceOf(accountAddress);
 
-  const userHasMinted = await kv.hget(accountAddress, 'hasMinted');
-  // if user has minted, return a static image
-  if (userHasMinted || balance.gt(0)) {
+  // if user has an nft, return a static image
+  if (balance.gt(0)) {
     const [userNftImageUrl, userNftTokenId] = await Promise.all([
       kv.hget(accountAddress, 'userNftImageUrl'),
       kv.hget(accountAddress, 'userNftTokenId'),
