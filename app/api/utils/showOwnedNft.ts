@@ -2,7 +2,6 @@ import { ThirdwebSDK } from "@thirdweb-dev/sdk";
 import { APP_URL, NFT_CHAIN_STRING, NFT_CONTRACT } from ".";
 import { NextRequest, NextResponse } from "next/server";
 import { StorageDownloader, ThirdwebStorage } from "@thirdweb-dev/storage";
-import { kv } from "@vercel/kv";
 
 export const showOwnedNft = async (req:NextRequest, accountAddress: string) => {
   // check balance onchain
@@ -12,13 +11,8 @@ export const showOwnedNft = async (req:NextRequest, accountAddress: string) => {
   const contract = await sdk.getContract(NFT_CONTRACT, "nft-collection");
   const ownedNfts = await contract.erc721.getOwned(accountAddress);
 
-  const userHasMinted = await kv.hget(accountAddress, 'hasMinted');
-  if (!userHasMinted) {
-    await kv.hset(accountAddress, { hasMinted: false });
-  }
-  console.log({ userHasMinted, ownedNfts: ownedNfts.length });
   // if user has minted, return a static image
-  if (userHasMinted || ownedNfts.length > 0) {
+  if (ownedNfts.length > 0) {
     console.log('user has minted or has nfts');
     const downloader = new StorageDownloader({
       secretKey: process.env.THIRDWEB_SECRET_KEY,
