@@ -30,12 +30,16 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
 
   // if user has minted, return a static image
   if (userHasMinted) {
-    const userNftImageUrl = await kv.hget(accountAddress, 'userNftImageUrl');
+    const [userNftImageUrl, userNftTokenId] = await Promise.all([
+      kv.hget(accountAddress, 'userNftImageUrl'),
+      kv.hget(accountAddress, 'userNftTokenId'),
+    ]);
     return new NextResponse(`
       <!DOCTYPE html><html><head>
         <meta property="fc:frame" content="vNext" />
         <meta property="fc:frame:image" content="${userNftImageUrl}" />
-        <meta property="fc:frame:button:1" content="Your NFT" />
+        <meta property="fc:frame:button:1" content="#${userNftTokenId}" />
+        <meta property="fc:frame:button:2" content="Your NFT" />
         <meta property="fc:frame:post_url" content="${APP_URL}/api/mynft" />
       </head></html>
     `);
