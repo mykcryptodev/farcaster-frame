@@ -168,7 +168,7 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
             <meta property="fc:frame:image" content="${imageUrl}" />
             <meta property="fc:frame:button:1" content="Now Minting #${count.toString()}..." />
             <meta property="fc:frame:button:1:action" content="link" />
-            <meta property="fc:frame:button:1:target" content="https://opensea.io/" />
+            <meta property="fc:frame:button:1:target" content="https://opensea.io/collection/myk-bois" />
             <meta property="fc:frame:button:2" content="Mint Tx Successful!" />
             <meta property="fc:frame:button:2:action" content="link" />
             <meta property="fc:frame:button:2:target" content="https://basescan.org/tx/${transactionHash}" />

@@ -30,7 +30,7 @@ export const showOwnedNft = async (accountAddress: string) => {
         <meta property="fc:frame:image" content="${image.url}" />
         <meta property="fc:frame:button:1" content="#${ownedNfts[0].metadata.id.toString()}" />
         <meta property="fc:frame:button:1:action" content="link" />
-        <meta property="fc:frame:button:1:target" content="https://opensea.io/" />
+        <meta property="fc:frame:button:1:target" content="https://opensea.io/collection/myk-bois" />
       </head></html>
     `);
   }
