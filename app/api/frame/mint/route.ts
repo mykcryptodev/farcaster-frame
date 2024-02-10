@@ -9,10 +9,11 @@ import { showOwnedNft } from '../../utils/showOwnedNft';
 export const maxDuration = 25;
 
 async function getResponse(req: NextRequest): Promise<NextResponse> {
-  const { nft, accountAddress, userHasMinted } = await getUser(req) as {
+  const { nft, accountAddress, userHasMinted, trustedData } = await getUser(req) as {
     userHasMinted: boolean;
     accountAddress: string;
     nft: NFT | undefined | null;
+    trustedData: { messageBytes: string };
   };
   console.log(`
   
@@ -89,18 +90,18 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
 
   // we dont wait for the blockchain, we just send off the tx and hope for the best
   // we only have a few seconds to respond to the user
-  const tx = contract.erc721.mintTo(accountAddress, {
-    ...nft.metadata,
-    name: nft.metadata.name + ` #${count}`,
-  }).then((tx) => {
-    console.log('finished tx', tx);
-  }).catch(e => {
-    console.log('error w tx', e);
-  });
-  console.log({ tx });
+  // const tx = contract.erc721.mintTo(accountAddress, {
+  //   ...nft.metadata,
+  //   name: nft.metadata.name + ` #${count}`,
+  // }).then((tx) => {
+  //   console.log('finished tx', tx);
+  // }).catch(e => {
+  //   console.log('error w tx', e);
+  // });
+  // console.log({ tx });
 
 
-  console.log('updated user as having minted');
+  // console.log('updated user as having minted');
 
   try {
     const downloader = new StorageDownloader({
@@ -110,23 +111,78 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
       secretKey: process.env.THIRDWEB_SECRET_KEY,
       downloader,
     });
+    const metadata = await storage.upload({
+      ...nft.metadata,
+      name: nft.metadata.name + ` #${count}`,
+    });
+    
+    // mint the nft
+    const res = await fetch('https://frame.syndicate.io/api/mint', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        Authorization: `Bearer ${process.env.SYNDICATE_API_KEY}`,
+      },
+      body: JSON.stringify({
+        frameTrustedData: trustedData.messageBytes,
+        args: [accountAddress, metadata],
+      }),
+    });
+    const json = await res.json();
+    console.log({ json });
+
     const image = await storage.download(nft.metadata.image as string);
     const imageUrl = image.url;
-  
-    // set the user as having minted
-    await kv.hset(accountAddress, { 
-      hasMinted: true,
-      userNftImageUrl: imageUrl,
-      userNftTokenId: count.toString(),
-    });
-  
+
+    if (res.status === 200) {
+      const {
+        success,
+        data: { transactionId },
+      } = await res.json();
+
+      const txHashRes = await fetch(
+        `https://frame.syndicate.io/api/transaction/${transactionId}/hash`,
+        {
+          headers: {
+            'content-type': 'application/json',
+            Authorization: `Bearer ${process.env.SYNDICATE_API_KEY}`,
+          },
+        },
+      );
+      const {
+        data: { transactionHash },
+      } = await txHashRes.json();
+      console.log({ transactionHash });
+
+      if (success) {
+        // set the user as having minted
+        await kv.hset(accountAddress, { 
+          hasMinted: true,
+          userNftImageUrl: imageUrl,
+          userNftTokenId: count.toString(),
+        });
+      
+        return new NextResponse(`
+          <!DOCTYPE html><html><head>
+            <meta property="fc:frame" content="vNext" />
+            <meta property="fc:frame:image" content="${imageUrl}" />
+            <meta property="fc:frame:button:1" content="Now Minting #${count.toString()}..." />
+            <meta property="fc:frame:button:1:action" content="link" />
+            <meta property="fc:frame:button:1:target" content="https://opensea.io/" />
+            <meta property="fc:frame:button:2" content="Mint Tx Successful!" />
+            <meta property="fc:frame:button:2:action" content="link" />
+            <meta property="fc:frame:button:2:target" content="https://basescan.org/tx/${transactionHash}" />
+          </head></html>
+        `);
+      }
+    }
     return new NextResponse(`
       <!DOCTYPE html><html><head>
         <meta property="fc:frame" content="vNext" />
-        <meta property="fc:frame:image" content="${imageUrl}" />
-        <meta property="fc:frame:button:1" content="#${count.toString()}" />
-        <meta property="fc:frame:button:2" content="Mint Successful!" />
-        <meta property="fc:frame:post_url" content="${APP_URL}/api/mynft" />
+        <meta property="fc:frame:image" content="${APP_BANNER}" />
+        <meta property="fc:frame:button:1" content="Something went wrong" />
+        <meta property="fc:frame:button:2" content="Start over" />
+        <meta property="fc:frame:post_url" content="${APP_URL}/api/frame" />
       </head></html>
     `);
   } catch (e) {

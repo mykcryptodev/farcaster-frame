@@ -8,8 +8,10 @@ import { showOwnedNft } from "./showOwnedNft";
 export const getUser = async (req: NextRequest) => {
   let accountAddress: string | undefined;
   let Message: FrameData | undefined;
+  let trustedData: { messageBytes: string } | undefined;
   try {
     const body: FrameRequest = await req.json();
+    trustedData = body.trustedData;
     const { isValid, message } = await getFrameMessage(body);
     Message = message;
 
@@ -62,5 +64,6 @@ export const getUser = async (req: NextRequest) => {
     message: Message,
     nft,
     userHasMinted,
+    trustedData,
   };
 }

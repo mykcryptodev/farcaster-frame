@@ -12,10 +12,10 @@ import sharp from 'sharp';
 
 import { type MetadataTemplate } from '../../../types/generator';
 
-export const APP_URL = process.env.NODE_ENV === 'production' ? 'https://farcaster-frame-myk.vercel.app' : 'https://8fe8-209-214-123-227.ngrok-free.app';
+export const APP_URL = process.env.NODE_ENV === 'production' ? 'https://farcaster-frame-myk.vercel.app' : 'https://3460-2600-4808-8c30-de00-a829-be11-ebf4-549d.ngrok-free.app';
 export const APP_BANNER = 'https://ipfs.io/ipfs/QmXAAdmuwiooY88E6KdZ5xdhqmHm6qxJb4QxNWhRUe6jeo/mykbois.png';
-export const NFT_CONTRACT = "0xD42575cA6f57c53Bce56C23d7c9f3AAc8ce50dF3";
-export const NFT_CHAIN_STRING = "base-sepolia-testnet";
+export const NFT_CONTRACT = "0x9C16193aDA014E04eF8e17a6446d44d945a0736b";
+export const NFT_CHAIN_STRING = "base";
 
 interface LayerOption {
   name: string;
