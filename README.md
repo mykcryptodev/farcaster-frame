@@ -1,93 +1,47 @@
-# A Frame in 100 lines (or less)
+# Frames.js Starter Kit
 
-Farcaster Frames in less than 100 lines, and ready to be deployed to Vercel.
+This is a boilerplate repo to get started quickly with `frames.js`
 
-Have fun! ⛵️
+## To Setup a New Mint
 
-## Files
+1. [Deploy an ERC-721 contract](https://thirdweb.com/0x9036464e4ecD2d40d21EE38a0398AEdD6805a09B/MochiDegen)
+2. Go to `app/lib/constants.ts` and update things like the NFT's chain, metadata, website link, contract address and setup your layers
+3. Go to [Syndicate](https://frame.syndicate.io/) and [get your API key](https://frame.syndicate.io/#createApiKey) and [setup a wallet](https://frame.syndicate.io/#createWallet) to broadcast transactions.
+4. If you only want active farcaster users or FIDs under a threshold, update that in `app/lib/checkIfEligible.ts`
 
-### `app/page.tsx`
-```tsx
-import { getFrameMetadata } from '@coinbase/onchainkit';
-import type { Metadata } from 'next';
+## Quickstart
 
-const frameMetadata = getFrameMetadata({
-  buttons: ['Next image'],
-  image: 'https://zizzamia.xyz/park-1.png',
-  post_url: 'https://zizzamia.xyz/api/frame',
-});
+If running from the frames.js repository itself:
 
-export const metadata: Metadata = {
-  title: 'zizzamia.xyz',
-  description: 'LFG',
-  openGraph: {
-    title: 'zizzamia.xyz',
-    description: 'LFG',
-    images: ['https://zizzamia.xyz/park-1.png'],
-  },
-  other: {
-    ...frameMetadata,
-  },
-};
+- Run `yarn` from the repository root
+- Run `cd examples/framesjs-starter`
 
-export default function Page() {
-  return (
-    <>
-      <h1>zizzamia.xyz</h1>
-    </>
-  );
-}
+1. Install dependencies `yarn install`
+
+2. Run the dev server `yarn dev`
+
+3. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+4. Edit `app/page.tsx`
+
+5. Visit [http://localhost:3000/debug](http://localhost:3000/debug) to debug your frame.
+
+6. (Optional) To use a real signer (costs warps), copy `.env.sample` to `.env` and fill in the env variables following the comments provided
+
+## Docs, Questions and Help
+
+- [Frames.js Documentation](https://framesjs.org)
+- [Awesome frames](https://github.com/davidfurlong/awesome-frames?tab=readme-ov-file)
+- Join the [/frames-dev](https://warpcast.com/~/channel/frames-devs) channel on Farcaster to ask questions
+
+## If you get stuck or have feedback, [Message @df please!](https://warpcast.com/df)
+
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+
+## Deploy
+
+```bash
+vercel
 ```
 
-### `app/layout.tsx`
-```tsx
-export const viewport = {
-  width: 'device-width',
-  initialScale: 1.0,
-};
-
-export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <html lang="en">
-      <body>{children}</body>
-    </html>
-  );
-}
-```
-
-### `app/api/frame/route.ts`
-```ts
-import { getFrameAccountAddress } from '@coinbase/onchainkit';
-import { NextRequest, NextResponse } from 'next/server';
-
-async function getResponse(req: NextRequest): Promise<NextResponse> {
-  let accountAddress = '';
-  try {
-    const body: { trustedData?: { messageBytes?: string } } = await req.json();
-    accountAddress = await getFrameAccountAddress(body, { NEYNAR_API_KEY: 'NEYNAR_API_DOCS' });
-  } catch (err) {
-    console.error(err);
-  }
-
-  return new NextResponse(`<!DOCTYPE html><html><head>
-    <meta property="fc:frame" content="vNext" />
-    <meta property="fc:frame:image" content="https://zizzamia.xyz/park-2.png" />
-    <meta property="fc:frame:button:1" content="Address: ${accountAddress}" />
-    <meta property="fc:frame:post_url" content="https://zizzamia.xyz/api/frame" />
-  </head></html>`);
-}
-
-export async function POST(req: NextRequest): Promise<Response> {
-  return getResponse(req);
-}
-
-export const dynamic = 'force-dynamic';
-```
-
-## Resources
-
-- [Official Farcaster Frames docs](https://warpcast.notion.site/Farcaster-Frames-4bd47fe97dc74a42a48d3a234636d8c5)
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+more deployment links coming soon, PRs welcome!
